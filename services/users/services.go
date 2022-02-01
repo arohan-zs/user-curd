@@ -20,14 +20,14 @@ func New(u stores.User) services.User {
 }
 
 //Creates a New User
-func (st *User) Create(value models.User) (int64, int64, error) {
-	lastInsertId, affect, err := st.u.Create(value)
+func (st *User) Create(value models.User) (models.User, error) {
+	user, err := st.u.Create(value)
 
 	if err != nil {
-		return 0, -1, errors.New("Given user could not be created.")
+		return models.User{}, errors.New("Given user could not be created.")
 	}
 
-	return lastInsertId, affect, nil
+	return user, nil
 }
 
 //Fetches a User with the given ID
@@ -53,14 +53,14 @@ func (st *User) Read() ([]models.User, error) {
 }
 
 //Updates a user with a given ID
-func (st *User) Update(value models.User, id int) (int64, int64, error) {
-	lastInsertId, affect, err := st.u.Update(value, id)
+func (st *User) Update(value models.User, id int) (models.User, error) {
+	user, err := st.u.Update(value, id)
 
 	if err != nil {
-		return 0, -1, errors.New("Given id is invalid user with the given id could not be updated")
+		return models.User{}, errors.New("Given id is invalid user with the given id could not be updated")
 	}
 
-	return lastInsertId, affect, nil
+	return user, nil
 }
 
 //Deletes a User with the given ID

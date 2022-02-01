@@ -5,9 +5,9 @@ import (
 )
 
 type User interface {
-	Create(value mUser.User) (int64, int64, error)
+	Create(value mUser.User) (mUser.User, error)
 	ReadByID(id int) (*mUser.User, error)
 	Read() ([]mUser.User, error)
-	Update(value mUser.User, id int) (int64, int64, error)
+	Update(value mUser.User, id int) (mUser.User, error)
 	Delete(id int) (int64, int64, error)
 }

@@ -1,0 +1,442 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "User CRUD",
+    "description": "This is the API documentation for User CRUD operation",
+    "contact": {
+      "email": "arohan.b@zopsmart.com"
+    },
+    "version": "1.0.0"
+  },
+  "tags": [
+    {
+      "name": "user",
+      "description": "APIs to implement CRUD on user"
+    }
+  ],
+  "paths": {
+    "/api/users": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Get all users",
+        "operationId": "Read",
+        "responses": {
+          "200": {
+            "description": "Retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/User"
+                      }
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/404NotFound"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Create a user",
+        "operationId": "Create",
+        "parameters": [
+          {
+            "name": "data",
+            "in": "header",
+            "description": "values that need to be put",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/User"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/User"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "created"
+                    },
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 201
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/400BadRequest"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/500InternalServerError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/{id}": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Get user by Id",
+        "operationId": "ReadById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id that needs to be fetched.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/User"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Retrieved"
+                    },
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 200
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid username supplied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/400BadRequest"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/404NotFound"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Update user by Id",
+        "description": "This can only be done by the logged in user.",
+        "operationId": "Update",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "id that need to be updated",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "data",
+            "in": "header",
+            "description": "values that need to be put",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "email": {
+                  "type": "string"
+                },
+                "phone": {
+                  "type": "string"
+                },
+                "age": {
+                  "type": "integer"
+                }
+              }
+            },
+            "example": {
+              "name": "Varun",
+              "email": "varun@gamil.com",
+              "phone": "99999882384",
+              "age": 21
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Updated user object",
+          "content": {
+            "*/*": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/User"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "created"
+                    },
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 201
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/400BadRequest"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Invalid username supplied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/500InternalServerError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Delete user by Id",
+        "description": "This can only be done by the logged in user.",
+        "operationId": "Delete",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id that needs to be deleted",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "integer",
+                      "example": 2
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "user deleted"
+                    },
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 201
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/400BadRequest"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Invalid username supplied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/500InternalServerError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "Id": {
+            "type": "integer",
+            "example": 1
+          },
+          "Name": {
+            "type": "string",
+            "example": "Varun"
+          },
+          "Email": {
+            "type": "string",
+            "example": "varun@gmail.com"
+          },
+          "Phone": {
+            "type": "string",
+            "example": "9999991234"
+          },
+          "Age": {
+            "type": "integer",
+            "example": 21
+          }
+        }
+      },
+      "400BadRequest": {
+        "type": "object",
+        "properties": {
+          "StatusCode": {
+            "type": "integer",
+            "example": 400
+          },
+          "ErrorMessage": {
+            "type": "string",
+            "example": "error bad requests"
+          }
+        }
+      },
+      "401Unauthorized": {
+        "type": "object",
+        "properties": {
+          "StatusCode": {
+            "type": "integer",
+            "example": 401
+          },
+          "ErrorMessage": {
+            "type": "string",
+            "example": "error unauthorised user"
+          }
+        }
+      },
+      "404NotFound": {
+        "type": "object",
+        "properties": {
+          "StatusCode": {
+            "type": "integer",
+            "example": 404
+          },
+          "ErrorMessage": {
+            "type": "string",
+            "example": "error not found"
+          }
+        }
+      },
+      "500InternalServerError": {
+        "type": "object",
+        "properties": {
+          "StatusCode": {
+            "type": "integer",
+            "example": 500
+          },
+          "ErrorMessage": {
+            "type": "string",
+            "example": "Internal Server Error"
+          }
+        }
+      }
+    }
+  }
+}

@@ -111,13 +111,13 @@ func Test_ReadHandler(t *testing.T) {
 
 func Test_Update(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	var r1, r2 int64
-	r1 = 1
-	r2 = 1
+	// var r1, r2 int64
+	// r1 = 1
+	// r2 = 1
 
-	var r3, r4 int64
-	r3 = 0
-	r4 = -1
+	// var r3, r4 int64
+	// r3 = 0
+	// r4 = -1
 	mockUserService := services.NewMockUser(ctrl)
 	h := Handler{mockUserService}
 
@@ -135,14 +135,14 @@ func Test_Update(t *testing.T) {
 			id:                 "1",
 			body:               testUser,
 			expectedStatusCode: http.StatusOK,
-			mockCall:           mockUserService.EXPECT().Update(testUser, 1).Return(r1, r2, nil),
+			mockCall:           mockUserService.EXPECT().Update(testUser, 1).Return(testUser, nil),
 		},
 		{
 			desc:               "Case:2",
 			id:                 "1",
 			body:               testUser,
 			expectedStatusCode: http.StatusBadRequest,
-			mockCall:           mockUserService.EXPECT().Update(testUser, 1).Return(r3, r4, errors.New("Invalid Id")),
+			mockCall:           mockUserService.EXPECT().Update(testUser, 1).Return(testUser, errors.New("Invalid Id")),
 		},
 		{
 			desc:               "Case:3",
@@ -239,13 +239,13 @@ func TestCreate(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	mockUserService := services.NewMockUser(ctrl)
 
-	var r1, r2 int64
-	r1 = 1
-	r2 = 1
+	// var r1, r2 int64
+	// r1 = 1
+	// r2 = 1
 
-	var r3, r4 int64
-	r3 = 0
-	r4 = -1
+	// var r3, r4 int64
+	// r3 = 0
+	// r4 = -1
 	h := Handler{mockUserService}
 
 	testUser := models.User{Name: "Arohan", Email: "arohan@gmail.com", Phone: "947844544333", Age: 24}
@@ -260,7 +260,7 @@ func TestCreate(t *testing.T) {
 			desc:               "Case1",
 			user:               testUser,
 			expectedStatusCode: http.StatusOK,
-			mockCall:           mockUserService.EXPECT().Create(testUser).Return(r1, r2, nil),
+			mockCall:           mockUserService.EXPECT().Create(testUser).Return(testUser, nil),
 		},
 		{
 			desc:               "Case2",
@@ -272,7 +272,7 @@ func TestCreate(t *testing.T) {
 			desc:               "Case3",
 			user:               testUser,
 			expectedStatusCode: http.StatusBadRequest,
-			mockCall:           mockUserService.EXPECT().Create(testUser).Return(r3, r4, errors.New("Could not create new user")),
+			mockCall:           mockUserService.EXPECT().Create(testUser).Return(testUser, errors.New("Could not create new user")),
 		},
 	}
 	for _, test := range tests {

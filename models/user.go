@@ -9,9 +9,9 @@ type User struct {
 }
 
 type Response struct {
-	Data       interface{} `json:"data"`
-	Message    string      `json:"message"`
-	StatusCode int         `json:"statusCode"`
+	Data       interface{} `json:"data,omitempty"`
+	Message    string      `json:"message,omitempty"`
+	StatusCode int         `json:"statusCode,omitempty"`
 }
 
 type ErrorResponse struct {

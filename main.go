@@ -9,6 +9,7 @@ import (
 	"github.com/gorilla/mux"
 
 	uHttp "github.com/arohanzst/user-curd/http/users"
+	"github.com/arohanzst/user-curd/middleware"
 	uServices "github.com/arohanzst/user-curd/services/users"
 	uStore "github.com/arohanzst/user-curd/stores/users"
 
@@ -54,11 +55,24 @@ func main() {
 	router := mux.NewRouter()
 
 	//Setting Up the router
-	router.Path("/api/users/{id}").Methods("GET").HandlerFunc(handler.ReadByIdHandler)
-	router.Path("/api/users").Methods("GET").HandlerFunc(handler.ReadHandler)
-	router.Path("/api/users/{id}").Methods("PUT").HandlerFunc(handler.UpdateHandler)
-	router.Path("/api/users/{id}").Methods("DELETE").HandlerFunc(handler.DeleteHandler)
-	router.Path("/api/users").Methods("POST").HandlerFunc(handler.CreateHandler)
+	router.Path("/api/users/{id}").Methods("GET").Handler(func() http.Handler {
+		return middleware.Authentication(http.HandlerFunc(handler.ReadByIdHandler))
+	}())
+	router.Path("/api/users").Methods("GET").Handler(func() http.Handler {
+		return middleware.Authentication(http.HandlerFunc(handler.ReadHandler))
+	}())
+
+	router.Path("/api/users/{id}").Methods("PUT").Handler(func() http.Handler {
+		return middleware.Authentication(http.HandlerFunc(handler.UpdateHandler))
+	}())
+
+	router.Path("/api/users/{id}").Methods("DELETE").Handler(func() http.Handler {
+		return middleware.Authentication(http.HandlerFunc(handler.DeleteHandler))
+	}())
+
+	router.Path("/api/users").Methods("POST").Handler(func() http.Handler {
+		return middleware.Authentication(http.HandlerFunc(handler.CreateHandler))
+	}())
 
 	http.Handle("/", router)
 
