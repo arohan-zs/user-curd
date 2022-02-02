@@ -29,22 +29,24 @@ func Test_Create(t *testing.T) {
 
 	tests := []struct {
 		desc           string
-		value          models.User
-		expectedResult models.User
+		value          *models.User
+		expectedResult *models.User
 		expectedError  error
 		mockCall       *gomock.Call
 	}{
 		{
-			desc:          "Case:1",
-			value:         models.User{Id: 1, Name: "Rohit", Email: "rohit@gmail.com", Phone: "9872345674", Age: 32},
-			expectedError: nil,
-			mockCall:      mockUserStore.EXPECT().Create(models.User{Id: 1, Name: "Rohit", Email: "rohit@gmail.com", Phone: "9872345674", Age: 32}).Return(data, nil),
+			desc:           "Case:1",
+			value:          &models.User{Id: 1, Name: "Rohit", Email: "rohit@gmail.com", Phone: "9872345674", Age: 32},
+			expectedResult: &models.User{Id: 1, Name: "Rohit", Email: "rohit@gmail.com", Phone: "9872345674", Age: 32},
+			expectedError:  nil,
+			mockCall:       mockUserStore.EXPECT().Create(&models.User{Id: 1, Name: "Rohit", Email: "rohit@gmail.com", Phone: "9872345674", Age: 32}).Return(&data, nil),
 		},
 		{
-			desc:          "Case:2",
-			value:         models.User{},
-			expectedError: errors.New("Given user could not be created."),
-			mockCall:      mockUserStore.EXPECT().Create(models.User{}).Return(models.User{}, errors.New("Given user could not be created.")),
+			desc:           "Case:2",
+			value:          nil,
+			expectedError:  errors.New("Error in the given query"),
+			expectedResult: nil,
+			mockCall:       mockUserStore.EXPECT().Create(nil).Return(nil, errors.New("Error in the given query")),
 		},
 	}
 
@@ -54,6 +56,10 @@ func Test_Create(t *testing.T) {
 
 			if err != nil && !reflect.DeepEqual(resp, test.expectedResult) {
 				t.Errorf("Expected: %v, Got: %v", test.expectedResult, resp)
+			}
+
+			if err != nil && !reflect.DeepEqual(err, test.expectedError) {
+				t.Errorf("Expected: %v, Got: %v", test.expectedError, err)
 			}
 		})
 	}
@@ -157,21 +163,21 @@ func Test_Update(t *testing.T) {
 	tests := []struct {
 		desc           string
 		id             int
-		expectedResult models.User
+		expectedResult *models.User
 		expectedError  error
 		mockCall       *gomock.Call
 	}{
 		{
 			desc:           "Case:1",
 			id:             1,
-			expectedResult: testUser,
+			expectedResult: &testUser,
 			expectedError:  nil,
 			mockCall:       mockUserStore.EXPECT().Update(testUser, 1).Return(testUser, nil),
 		},
 		{
 			desc:           "Case:2",
 			id:             1,
-			expectedResult: testUser,
+			expectedResult: &testUser,
 			expectedError:  errors.New("Given id is invalid user with the given id could not be updated"),
 			mockCall:       mockUserStore.EXPECT().Update(testUser, 1).Return(models.User{}, errors.New("Given id is invalid user with the given id could not be updated")),
 		},
@@ -179,7 +185,7 @@ func Test_Update(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			resp, err := testUserService.Update(testUser, test.id)
+			resp, err := testUserService.Update(&testUser, test.id)
 
 			if err != nil && !reflect.DeepEqual(err, test.expectedError) {
 				t.Errorf("Error: Expected %v Got %v\n", test.expectedError, err)
@@ -214,39 +220,38 @@ func Test_Delete(t *testing.T) {
 	testUserService := New(mockUserStore)
 
 	tests := []struct {
-		desc                 string
-		id                   int
-		expectedlastInsertId int64
-		expectedaffect       int64
-		mockCall             *gomock.Call
+		desc          string
+		id            int
+		expectedError error
+		mockCall      *gomock.Call
 	}{
 		{
-			desc:                 "Case1",
-			id:                   1,
-			expectedlastInsertId: 1,
-			expectedaffect:       1,
-			mockCall:             mockUserStore.EXPECT().Delete(1).Return(r1, r2, nil),
+			desc:          "Case1",
+			id:            1,
+			expectedError: nil,
+			mockCall:      mockUserStore.EXPECT().Delete(1).Return(r1, r2, nil),
 		},
 		{
-			desc:                 "Case2",
-			id:                   2,
-			expectedlastInsertId: 0,
-			expectedaffect:       -1,
-			mockCall:             mockUserStore.EXPECT().Delete(2).Return(r3, r4, errors.New("Given id is invalid user with the given id could not be deleted")),
+			desc:          "Case2",
+			id:            2,
+			expectedError: errors.New("Error in the given query"),
+			mockCall:      mockUserStore.EXPECT().Delete(2).Return(r3, r4, errors.New("Given id is invalid user with the given id could not be deleted")),
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			lastInsertId, affect, _ := testUserService.Delete(test.id)
+			err := testUserService.Delete(test.id)
 
-			if lastInsertId != test.expectedlastInsertId {
-				t.Errorf("Expected: %v, Got: %v", test.expectedlastInsertId, lastInsertId)
+			if err != nil && !reflect.DeepEqual(err, test.expectedError) {
+				t.Errorf("Error: Expected %v Got %v\n", test.expectedError, err)
 			}
 
-			if affect != test.expectedaffect {
-				t.Errorf("Expected: %v, Got: %v", test.expectedaffect, affect)
+			if err != nil {
+				fmt.Printf("Expected %v Got %v\n", test.expectedError, err)
+				return
 			}
+
 		})
 	}
 }

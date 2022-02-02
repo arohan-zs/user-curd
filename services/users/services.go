@@ -20,56 +20,128 @@ func New(u stores.User) services.User {
 }
 
 //Creates a New User
-func (st *User) Create(value models.User) (models.User, error) {
-	user, err := st.u.Create(value)
+func (se *User) Create(value *models.User) (*models.User, error) {
+
+	if value == nil {
+
+		return nil, errors.New("Given user could not be created.")
+	}
+
+	if isValidName(value.Name) == false {
+
+		return nil, errors.New("Invalid Name")
+	}
+
+	if isValidEmail(value.Email) == false {
+
+		return nil, errors.New("Invalid Email")
+	}
+
+	if isValidPhone(value.Phone) == false {
+
+		return nil, errors.New("Invalid Phone")
+	}
+
+	if isValidAge(value.Age) == false {
+
+		return nil, errors.New("Invalid Age")
+	}
+
+	user, err := se.u.Create(value)
 
 	if err != nil {
-		return models.User{}, errors.New("Given user could not be created.")
+		return nil, err
 	}
 
 	return user, nil
 }
 
 //Fetches a User with the given ID
-func (st *User) ReadByID(id int) (*models.User, error) {
-	user, err := st.u.ReadByID(id)
+func (se *User) ReadByID(id int) (*models.User, error) {
+
+	if isValidId(id) == false {
+
+		return nil, errors.New("Invalid Id")
+	}
+
+	user, err := se.u.ReadByID(id)
 
 	if err != nil {
-		return &models.User{}, errors.New("User with the given id could not be fetched")
+		return nil, err
 	}
 
 	return user, nil
 }
 
 //Fetches all the Users
-func (st *User) Read() ([]models.User, error) {
-	users, err := st.u.Read()
+func (se *User) Read() ([]models.User, error) {
+	users, err := se.u.Read()
 
 	if err != nil {
-		return []models.User{}, errors.New("Users could not be retrieved")
+		return []models.User{}, err
 	}
 
 	return users, nil
 }
 
 //Updates a user with a given ID
-func (st *User) Update(value models.User, id int) (models.User, error) {
-	user, err := st.u.Update(value, id)
+func (se *User) Update(value *models.User, id int) (*models.User, error) {
 
-	if err != nil {
-		return models.User{}, errors.New("Given id is invalid user with the given id could not be updated")
+	if isValidId(id) == false {
+
+		return nil, errors.New("Invalid Id")
 	}
 
+	user, err := se.ReadByID(id)
+
+	if err != nil || user.Name == "" {
+
+		return nil, errors.New("Invalid Id")
+	}
+
+	if value.Email != "" && isValidEmail(value.Email) == false {
+
+		return nil, errors.New("Invalid Email")
+	}
+
+	if value.Phone != "" && isValidPhone(value.Phone) == false {
+
+		return nil, errors.New("Invalid Phone")
+	}
+
+	if value.Age != 0 && isValidAge(value.Age) == false {
+
+		return nil, errors.New("Invalid Age")
+	}
+
+	user, err = se.u.Update(value, id)
+
+	if err != nil {
+
+		return nil, err
+	}
 	return user, nil
 }
 
 //Deletes a User with the given ID
-func (st *User) Delete(id int) (int64, int64, error) {
-	lastInsertId, affect, err := st.u.Delete(id)
+func (se *User) Delete(id int) error {
 
-	if err != nil {
-		return 0, -1, errors.New("Given id is invalid user with the given id could not be deleted")
+	if isValidId(id) == false {
+
+		return errors.New("Invalid Id")
 	}
 
-	return lastInsertId, affect, nil
+	user, err := se.ReadByID(id)
+
+	if err != nil || user.Name == "" {
+		return errors.New("Invalid Id")
+	}
+
+	err = se.u.Delete(id)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

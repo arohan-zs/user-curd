@@ -46,7 +46,7 @@ func (h Handler) ReadByIdHandler(res http.ResponseWriter, req *http.Request) {
 		_, _ = res.Write(jsonData)
 		return
 	}
-	response := models.Response{Data: user, Message: "User Retreived Successfully", StatusCode: 200}
+	response := models.Response{Data: *user, Message: "User Retreived Successfully", StatusCode: 200}
 	data, _ := json.Marshal(response)
 	_, _ = res.Write(data)
 
@@ -87,6 +87,7 @@ func (h Handler) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	user := models.User{Id: 0, Name: "", Email: "", Phone: "", Age: 0}
 
 	err := json.NewDecoder(req.Body).Decode(&user)
+	user.Id = 0
 
 	if err != nil || reflect.DeepEqual(user, models.User{}) {
 		res.WriteHeader(http.StatusBadRequest)
@@ -112,7 +113,7 @@ func (h Handler) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	updatedUser, err := h.S.Update(user, convId)
+	updatedUser, err := h.S.Update(&user, convId)
 
 	if err != nil {
 		res.WriteHeader(http.StatusBadRequest)
@@ -123,7 +124,7 @@ func (h Handler) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	response := models.Response{Data: updatedUser, Message: "User has been updated successfully", StatusCode: 200}
+	response := models.Response{Data: *updatedUser, Message: "User has been updated successfully", StatusCode: 200}
 	data, _ := json.Marshal(response)
 	_, _ = res.Write(data)
 
@@ -150,7 +151,7 @@ func (h Handler) DeleteHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	_, _, err = h.S.Delete(convId)
+	err = h.S.Delete(convId)
 
 	if err != nil {
 		res.WriteHeader(http.StatusBadRequest)
@@ -188,7 +189,7 @@ func (h Handler) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 	fmt.Println(user)
-	newUser, err := h.S.Create(user)
+	newUser, err := h.S.Create(&user)
 	if err != nil {
 		res.WriteHeader(http.StatusBadRequest)
 		newError := models.ErrorResponse{StatusCode: http.StatusBadRequest, ErrorMessage: "Bad Request. User creation unsuccessful"}
@@ -198,7 +199,7 @@ func (h Handler) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	response := models.Response{Data: newUser, Message: "User has been created successfully", StatusCode: 201}
+	response := models.Response{Data: *newUser, Message: "User has been created successfully", StatusCode: 201}
 	data, _ := json.Marshal(response)
 
 	_, _ = res.Write(data)
